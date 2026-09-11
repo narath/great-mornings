@@ -120,3 +120,35 @@ p:last-child{margin-bottom:0;}
   font-size:var(--t-meta);color:var(--muted);line-height:1.7;
 }
 footer{padding:56px 0 80px;}
+
+/* ---------- Paper ----------
+   Everything that is chrome goes; the words, the title and the attribution
+   stay. bin/build-downloads prints the PDF from exactly this. */
+.print-only{display:none;}
+
+@media print{
+  :root{--text:#111;--muted:#444;--gold:#6b4f22;}
+
+  body{background:#fff;color:#111;font-size:11.5pt;line-height:1.55;}
+  body::before{display:none;}
+
+  .wrap{max-width:none;padding:0;}
+  .masthead{padding:0;}
+  .recitation{padding:0;}
+
+  .wordmark{color:#6b4f22;margin:0 0 18pt;}
+  h1{font-size:20pt;margin:0 0 6pt;}
+  .standfirst{display:none;}
+  .eyebrow{color:#444;margin:0 0 20pt;}
+
+  .stanza{font-size:11.5pt;margin:0 0 14pt;break-inside:avoid;}
+  .closing{font-size:11.5pt;color:#6b4f22;margin:18pt 0 0;}
+
+  .print-only{display:block;margin:26pt 0 0;font-size:8.5pt;color:#444;}
+
+  /* Chrome: gone. */
+  .hair,#app,#take,#yours,#licence,footer{display:none;}
+
+  a{color:inherit;border-bottom:0;}
+  @page{margin:18mm 16mm;}
+}
