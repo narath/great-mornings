@@ -5,6 +5,16 @@ AddType text/plain .md
 
 AddDefaultCharset UTF-8
 
+# LICENSE and NOTICE have no extension, so Apache sends them with no type
+# and a browser offers to download them. They are meant to be read.
+<FilesMatch "^(LICENSE|NOTICE)$">
+  ForceType text/plain
+</FilesMatch>
+
+# Browsers ask for /favicon.ico whatever the page declares — the PDF, for
+# one, is not our HTML. Point it at the icon we do ship.
+RedirectMatch 301 ^/favicon\.ico$ /assets/icon.png
+
 <IfModule mod_expires.c>
   ExpiresActive On
   ExpiresByType text/css "access plus 7 days"
