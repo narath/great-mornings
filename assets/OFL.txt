@@ -1,0 +1,6 @@
+Inter (c) The Inter Project Authors, https://github.com/rsms/inter
+Plus Jakarta Sans (c) Tokotype, https://github.com/tokotype/PlusJakartaSans
+
+Both families are licensed under the SIL Open Font License, Version 1.1,
+which permits bundling them in an application. Full text:
+https://openfontlicense.org/open-font-license-official-text/

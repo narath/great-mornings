@@ -10,6 +10,7 @@ PHRASE = re.compile(r'^\s*"(.*)",\s*$')
 CLOSING = re.compile(r'^\s*closing:\s*"(.*)"\s*$')
 STANZA = re.compile(r'<p class="stanza">(.*?)</p>', re.S)
 CLOSING_HTML = re.compile(r'<p class="closing">(.*?)</p>', re.S)
+LINE = re.compile(r'<span class="line">(.*?)</span>', re.S)
 
 
 def from_swift(path):
@@ -39,12 +40,11 @@ def from_markdown(path):
 def from_html(path):
     html = open(path, encoding="utf-8").read()
     lines = []
-    for block in STANZA.findall(html) + CLOSING_HTML.findall(html):
-        for line in re.split(r"<br\s*/?>", block):
-            line = re.sub(r"\s+", " ", line).strip()
-            if line:
-                lines.append(line)
-    return lines
+    for block in STANZA.findall(html):
+        lines += [re.sub(r"\s+", " ", m).strip() for m in LINE.findall(block)]
+    for block in CLOSING_HTML.findall(html):
+        lines.append(re.sub(r"\s+", " ", block).strip())
+    return [line for line in lines if line]
 
 
 def report(want, got, name):
