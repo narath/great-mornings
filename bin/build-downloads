@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Generate downloads/ from the canonical text.
+#
+#   PDF   — printed from index.html by headless Chrome, so it is exactly
+#           what the print stylesheet describes.
+#   .docx — from recitations/individual.md via textutil, for anyone who
+#           wants to edit the words in Word, Pages or Google Docs.
+#   .txt  — the same, plain, for pasting into the app's own editor.
+#
+# Run it after any change to the text or the print styles, then commit
+# what changes.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+OUT="$ROOT/downloads"
+NAME="great-mornings-recitation"
+PORT=8123
+CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+
+"$ROOT/bin/check-text"
+
+mkdir -p "$OUT"
+TMP="$(mktemp -d)"
+cleanup() {
+  rm -rf "$TMP"
+  if [[ -n "${SERVER:-}" ]]; then kill "$SERVER" 2>/dev/null || true; fi
+}
+trap cleanup EXIT
+
+# Chrome must fetch the fonts and CSS over http, not file://, or the PDF
+# comes out in a fallback face.
+python3 -m http.server "$PORT" --directory "$ROOT" >/dev/null 2>&1 &
+SERVER=$!
+sleep 1
+
+"$CHROME" --headless=new --disable-gpu --no-pdf-header-footer \
+  --print-to-pdf="$OUT/$NAME.pdf" "http://localhost:$PORT/" 2>/dev/null
+
+python3 "$ROOT/bin/plain_text.py" "$ROOT/recitations/individual.md" > "$OUT/$NAME.txt"
+python3 "$ROOT/bin/plain_text.py" --html "$ROOT/recitations/individual.md" > "$TMP/$NAME.html"
+textutil -convert docx -output "$OUT/$NAME.docx" "$TMP/$NAME.html"
+
+ls -lh "$OUT"
+echo
+echo "build-downloads: check the PDF is one page before committing."
