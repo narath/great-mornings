@@ -29,7 +29,7 @@
 
 <div class="recite-bar wrap">
   <a href="../">← Great Mornings</a>
-  <a href="#" id="print">Print this</a>
+  <a href="../downloads/great-mornings-recitation.pdf">Print this</a>
 </div>
 
 <main>
@@ -59,16 +59,5 @@
   </article>
 </main>
 
-<script>
-  // "Print this", and the ?print link from the invitation, do the same
-  // thing. Nothing else on this page is scripted.
-  document.getElementById('print').addEventListener('click', function (e) {
-    e.preventDefault();
-    window.print();
-  });
-  if (location.search.indexOf('print') !== -1) {
-    window.addEventListener('load', function () { window.print(); });
-  }
-</script>
 </body>
 </html>
