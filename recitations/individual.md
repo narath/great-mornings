@@ -29,8 +29,9 @@ I wish the best for them, and will give them my strength and support through my 
 I welcome the day.  
 I am ready.
 
-Go well.
-
 ---
 
-"What makes for a great morning?" by Narath Carlile · CC BY 4.0 · mornings.maketimeflow.com
+A gift from Narath at MakeTimeFlow, in the hope of improving your life,  
+the lives of those you love, our communities and our earth.
+
+mornings.maketimeflow.com · "What makes for a great morning?" · CC BY 4.0

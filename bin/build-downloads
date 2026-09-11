@@ -40,6 +40,14 @@ python3 "$ROOT/bin/plain_text.py" "$ROOT/recitations/individual.md" > "$OUT/$NAM
 python3 "$ROOT/bin/plain_text.py" --html "$ROOT/recitations/individual.md" > "$TMP/$NAME.html"
 textutil -convert docx -output "$OUT/$NAME.docx" "$TMP/$NAME.html"
 
+# The app's closing line belongs to the app. Check what was just written,
+# not what was there before: check-text covers the sources, this covers the
+# output.
+if grep -q "Go well." "$OUT/$NAME.txt"; then
+  echo "build-downloads: the .txt still contains the app's closing line." >&2
+  exit 1
+fi
+
 ls -lh "$OUT"
 echo
 echo "build-downloads: check the PDF is one page before committing."
