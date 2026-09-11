@@ -1,7 +1,11 @@
 /* Great Mornings — mornings.maketimeflow.com
-   Tokens are the app's, from Great Mornings/Views/Theme/Zen.swift, so the
-   page and the screen a person wakes to are recognisably one thing.
-   No serif anywhere: Inter, and Plus Jakarta Sans 600 for the wordmark. */
+   Two pages: the invitation, and the recitation on a page of its own.
+
+   The recitation is set in Source Serif 4 on warm ink, which is how
+   MakeTimeFlow sets a Story (app/assets/stylesheets/components/story.css):
+   authored prose gets a serif voice and a warmer white than the cool
+   interface blue. Inter carries the chrome. The ground is the app's own
+   near-black, from Views/Theme/Zen.swift. */
 
 @font-face{font-family:"Inter";src:url("assets/inter-regular.woff2") format("woff2");
   font-weight:400;font-style:normal;font-display:swap;}
@@ -9,19 +13,29 @@
   font-weight:500;font-style:normal;font-display:swap;}
 @font-face{font-family:"Plus Jakarta Sans";src:url("assets/jakarta-semibold.woff2") format("woff2");
   font-weight:600;font-style:normal;font-display:swap;}
+/* Weight pinned to 400, optical size left variable (8–60): the title gets
+   display letterforms and the recitation gets text ones, from one 42KB file. */
+@font-face{font-family:"Source Serif 4";src:url("assets/source-serif-4.woff2") format("woff2");
+  font-weight:400;font-style:normal;font-display:swap;}
 
 :root{
   --bg:#080C18;
-  --surface:#141C34;
-  --text:#E5EDFF;
-  --muted:#A4B4D0;
   --border:#546894;
   --accent:#86B0FF;
   --gold:#F6C38B;
   --hair:rgba(84,104,148,.28);
 
+  /* Interface white (cool) and authored-prose ink (warm). Hex first, so a
+     browser without oklch still gets the right idea. */
+  --text:#E5EDFF;
+  --muted:#A4B4D0;
+  --ink:#F2EADF;
+  --ink-2:#CDB79E;
+  --ink-faint:#9A876F;
+
   --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   --display:"Plus Jakarta Sans",var(--sans);
+  --serif:"Source Serif 4",Georgia,"Iowan Old Style",serif;
 
   --t-meta:clamp(11px,.7vw + 9px,13px);
   --t-body:clamp(16px,.4vw + 15px,17px);
@@ -31,6 +45,13 @@
 
   --col:660px;
   --ease:cubic-bezier(.2,.7,.2,1);
+}
+@supports (color: oklch(94% 0.025 80)){
+  :root{
+    --ink:oklch(94% 0.025 80);      /* warm off-white, faint gold cast */
+    --ink-2:oklch(78% 0.04 75);     /* muted sepia */
+    --ink-faint:oklch(60% 0.04 75);
+  }
 }
 
 *{box-sizing:border-box;}
@@ -47,7 +68,7 @@ body{
   text-rendering:optimizeLegibility;
 }
 
-/* The sunrise: a glow rising from the bottom of the first screen, as on
+/* The sunrise: a glow rising from the bottom of the viewport, as on
    Arrival. Fixed, so it stays at the horizon while the text scrolls. */
 body::before{
   content:"";position:fixed;inset:auto 0 0 0;height:62vh;pointer-events:none;
@@ -55,7 +76,7 @@ body::before{
     rgba(246,195,139,.16) 0%, rgba(246,195,139,.05) 38%, transparent 70%);
   z-index:0;
 }
-main,header,footer{position:relative;z-index:1;}
+main,header,footer,.recite-bar{position:relative;z-index:1;}
 
 a{color:var(--accent);text-decoration:none;border-bottom:1px solid transparent;
   transition:border-color .2s var(--ease);}
@@ -66,84 +87,91 @@ a:hover{border-bottom-color:var(--accent);}
 .section{padding:64px 0;}
 @media (min-width:760px){.section{padding:88px 0;}}
 .hair{border:0;border-top:1px solid var(--hair);margin:0;}
+.muted{color:var(--muted);}
 
 .eyebrow{
   font-size:var(--t-meta);font-weight:500;letter-spacing:.14em;
   text-transform:uppercase;color:var(--muted);margin:0 0 14px;
 }
 
-/* ---------- Masthead ---------- */
-.masthead{padding:76px 0 0;}
-.wordmark{
-  font-family:var(--display);font-weight:600;font-size:var(--t-meta);
-  letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 28px;
-}
 h1{
-  font-family:var(--sans);font-weight:400;font-size:var(--t-h1);
-  line-height:1.14;letter-spacing:-.02em;margin:0 0 16px;
+  font-family:var(--serif);font-weight:400;font-size:var(--t-h1);
+  line-height:1.14;letter-spacing:-.01em;margin:0 0 16px;color:var(--ink);
 }
-.standfirst{font-size:var(--t-recite);color:var(--muted);margin:0;max-width:34ch;}
-
-/* ---------- The recitation ---------- */
-.recitation{padding:56px 0 8px;}
-.stanza{
-  font-size:var(--t-recite);line-height:1.62;margin:0 0 34px;
-  letter-spacing:-.008em;
-}
-/* Each phrase is its own block with a hanging indent, so a line that wraps
-   is set in from the rail and never reads as the next phrase. Verse is set
-   this way for the same reason. text-indent alone cannot do it: it applies
-   to the first line of a block, not to every <br>-separated line. */
-.line{display:block;padding-left:1.15em;text-indent:-1.15em;}
-
-/* ---------- Everything after the words ---------- */
 h2{font-size:var(--t-h2);font-weight:500;letter-spacing:-.012em;margin:0 0 14px;}
 p{margin:0 0 16px;}
 p:last-child{margin-bottom:0;}
-.muted{color:var(--muted);}
 
-.actions{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 0;padding:0;list-style:none;}
-.actions a,.button{
-  display:inline-block;padding:11px 18px;border:1px solid var(--border);
+/* ---------- Buttons ---------- */
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin:28px 0 0;padding:0;list-style:none;}
+.actions a{
+  display:inline-block;padding:12px 22px;border:1px solid var(--border);
   border-radius:999px;font-size:var(--t-meta);font-weight:500;letter-spacing:.04em;
   color:var(--text);border-bottom-color:var(--border);
   transition:border-color .2s var(--ease),background .2s var(--ease);
 }
-.actions a:hover,.button:hover{border-color:var(--accent);background:rgba(134,176,255,.08);}
-.button--gold{border-color:rgba(246,195,139,.5);color:var(--gold);}
-.button--gold:hover{border-color:var(--gold);background:rgba(246,195,139,.08);}
+.actions a:hover{border-color:var(--accent);background:rgba(134,176,255,.08);}
+.actions a.primary{border-color:rgba(246,195,139,.55);color:var(--gold);}
+.actions a.primary:hover{border-color:var(--gold);background:rgba(246,195,139,.08);}
 
-.attribution{
-  font-size:var(--t-meta);color:var(--muted);line-height:1.7;
+/* ---------- The invitation (index) ---------- */
+.masthead{padding:22vh 0 0;}
+@media (min-width:760px){.masthead{padding:24vh 0 0;}}
+.wordmark{
+  font-family:var(--display);font-weight:600;font-size:var(--t-meta);
+  letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 28px;
 }
+.standfirst{font-size:var(--t-recite);color:var(--muted);margin:0;max-width:42ch;}
+.masthead .hair{margin-top:22vh;}
+
+/* ---------- The recitation (recitation/index.html) ---------- */
+.recite-bar{
+  display:flex;justify-content:space-between;align-items:center;gap:16px;
+  /* padding-top only: the element also carries .wrap, and a padding
+     shorthand here would override .wrap's horizontal padding. */
+  padding-top:22px;font-size:var(--t-meta);
+}
+.recite-bar a{color:var(--muted);letter-spacing:.06em;}
+.recite-bar a:hover{color:var(--text);border-bottom-color:var(--muted);}
+
+.recitation{padding:9vh 0 12vh;}
+.recitation h1{margin-bottom:10px;}
+.recitation .eyebrow{color:var(--ink-faint);margin:0 0 44px;}
+
+.stanza{
+  font-family:var(--serif);font-size:var(--t-recite);line-height:1.66;
+  color:var(--ink);margin:0 0 34px;
+  font-feature-settings:"liga" 1,"kern" 1,"onum" 1;   /* old-style figures */
+}
+/* Each phrase is its own block with a hanging indent, so a line that wraps
+   is set in from the rail and never reads as the next phrase. Verse is set
+   this way for the same reason. text-indent alone cannot do it: it applies
+   to the first line of a block, not to every line. */
+.line{display:block;padding-left:1.15em;text-indent:-1.15em;}
+
+.attribution{font-size:var(--t-meta);color:var(--muted);line-height:1.7;}
 footer{padding:56px 0 80px;}
 
 /* ---------- Paper ----------
-   Everything that is chrome goes; the words, the title and the attribution
-   stay. bin/build-downloads prints the PDF from exactly this. */
+   Everything that is chrome goes; the words, the title and the footer stay.
+   bin/build-downloads prints the PDF from exactly this. */
 .print-only{display:none;}
 
 @media print{
-  :root{--text:#111;--muted:#444;--gold:#6b4f22;}
+  :root{--text:#111;--muted:#444;--gold:#6b4f22;--ink:#111;--ink-faint:#444;}
 
   body{background:#fff;color:#111;font-size:11.5pt;line-height:1.55;}
   body::before{display:none;}
 
   .wrap{max-width:none;padding:0;}
-  .masthead{padding:0;}
   .recitation{padding:0;}
+  .recite-bar{display:none;}
 
-  .wordmark{color:#6b4f22;margin:0 0 18pt;}
   h1{font-size:20pt;margin:0 0 6pt;}
-  .standfirst{display:none;}
-  .eyebrow{color:#444;margin:0 0 20pt;}
+  .recitation .eyebrow{color:#444;margin:0 0 20pt;}
 
   .stanza{font-size:11.5pt;margin:0 0 14pt;break-inside:avoid;}
-
   .print-only{display:block;margin:26pt 0 0;font-size:8.5pt;color:#444;}
-
-  /* Chrome: gone. */
-  .hair,#app,#take,#yours,#licence,footer{display:none;}
 
   a{color:inherit;border-bottom:0;}
   @page{margin:18mm 16mm;}

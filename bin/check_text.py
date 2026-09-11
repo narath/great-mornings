@@ -80,12 +80,12 @@ def closing_is_absent(closing, paths):
 def main():
     swift, markdown = sys.argv[1], sys.argv[2]
     root = os.path.dirname(os.path.dirname(markdown))
-    page = os.path.join(root, "index.html")
+    page = os.path.join(root, "recitation", "index.html")
 
     want, closing = from_swift(swift)
     status = report(want, from_markdown(markdown), "recitations/individual.md")
     if os.path.exists(page):
-        status |= report(want, from_html(page), "index.html")
+        status |= report(want, from_html(page), "recitation/index.html")
 
     # Sources only. The downloads are derived from these, and
     # bin/build-downloads checks its own output after writing it — checking
