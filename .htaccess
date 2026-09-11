@@ -1,0 +1,14 @@
+# DreamHost is Apache. Without this, a browser downloads recitations/*.md
+# as a file instead of showing it — and /recitations/individual.md is meant
+# to be a readable URL, not an attachment.
+AddType text/plain .md
+
+AddDefaultCharset UTF-8
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 7 days"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType image/png "access plus 30 days"
+  ExpiresByType text/html "access plus 1 hour"
+</IfModule>

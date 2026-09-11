@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Preview mornings.maketimeflow.com locally with Python's http.server.
+#
+# Usage:
+#   bin/serve            # serve on http://localhost:8000
+#   bin/serve 9000       # serve on a different port
+#
+# Override without arguments:
+#   PORT=9000 bin/serve
+
+set -euo pipefail
+
+PORT="${1:-${PORT:-8000}}"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
+echo "serving $ROOT at http://localhost:$PORT (ctrl-c to stop)"
+exec python3 -m http.server "$PORT" --directory "$ROOT"

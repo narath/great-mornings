@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# Deploy mornings.maketimeflow.com to DreamHost via rsync over SSH.
+#
+# Usage:
+#   bin/deploy              # deploy
+#   bin/deploy --dry-run    # preview without uploading or deleting
+#   bin/deploy -n           # same as --dry-run
+#
+# Override the SSH target without editing the file:
+#   DEPLOY_USER=foo DEPLOY_HOST=bar DEPLOY_PATH=baz bin/deploy
+
+set -euo pipefail
+
+DEPLOY_USER="${DEPLOY_USER:-mornings_maketimeflow}"
+DEPLOY_HOST="${DEPLOY_HOST:-mornings.maketimeflow.com}"
+DEPLOY_PATH="${DEPLOY_PATH:-~/mornings.maketimeflow.com/}"
+
+DRY=()
+case "${1:-}" in
+  -n|--dry-run) DRY=(--dry-run) ;;
+  "") ;;
+  *) echo "deploy: unknown argument: $1" >&2; exit 2 ;;
+esac
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
+# Trailing slash on source = copy contents of ROOT, not the ROOT dir itself.
+rsync \
+  --archive \
+  --compress \
+  --human-readable \
+  --itemize-changes \
+  --delete \
+  "${DRY[@]}" \
+  --exclude=".git/" \
+  --exclude=".gitignore" \
+  --exclude=".gitattributes" \
+  --exclude=".DS_Store" \
+  --exclude=".env" \
+  --exclude=".env.*" \
+  --exclude="bin/" \
+  --exclude=".venv/" \
+  --exclude="node_modules/" \
+  --exclude="README.md" \
+  --exclude="*.swp" \
+  --exclude="*~" \
+  "$ROOT/" \
+  "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH"
+
+if [[ ${#DRY[@]} -gt 0 ]]; then
+  echo
+  echo "deploy: dry run complete — no files were changed on $DEPLOY_HOST."
+else
+  echo
+  echo "deploy: synced to $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH"
+fi
