@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Does recitations/individual.md still say exactly what the app says?
+#
+# BuiltInRecitation.swift is the authority: it is the text that ships and
+# the text the app's tests guard. This script re-reads it and diffs.
+#
+# Usage:
+#   bin/check-text                       # assumes the app repo is a sibling
+#   bin/check-text /path/to/BuiltInRecitation.swift
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+SWIFT="${1:-$ROOT/../Great Mornings/Great Mornings/Model/BuiltInRecitation.swift}"
+
+if [[ ! -f "$SWIFT" ]]; then
+  echo "check-text: cannot find BuiltInRecitation.swift at:" >&2
+  echo "  $SWIFT" >&2
+  echo "Pass its path as the first argument." >&2
+  exit 2
+fi
+
+exec python3 "$ROOT/bin/check_text.py" "$SWIFT" "$ROOT/recitations/individual.md"
