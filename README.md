@@ -34,11 +34,11 @@ has the shape and none of the words.
 
 Write the one that's true for you, and say that instead.
 
-## Say it with the app
+## If you want help getting started
 
-Great Mornings is an iPhone app: one invitation at the hour you choose, the
-words one phrase at a time, with my reading or in silence. No account, no
-streaks, nothing collected. It's in open beta —
+There is an iPhone app. One invitation, at the hour you choose. Say the words
+with me, or I read it for you, or you read it yourself. No account, no streaks.
+It's built to be learned and put down. It's in open beta —
 [join on TestFlight](https://testflight.apple.com/join/s5JQ764d).
 
 ## Licence
